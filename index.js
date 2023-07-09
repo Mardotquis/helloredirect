@@ -1,19 +1,21 @@
-const sHandler = require('serverless-express/handler')
 const express = require('express');
+const serverless = require('serverless-http');
 
-const app = require('./app.js');
+const mainRoutes = require('./app');
 
+const app = express();
 
-// Define the Lambda handler function
-exports.sHandler = handler(app);
+app.use(express.json());
 
-// Run the app locally using nodemon
-if (require.main === module) {
+app.use('/', mainRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).send();
+});
+
+app.listen(() => {
   const port = process.env.PORT || 3000;
-  server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-}
+  console.log(`listening at: ${port} hehe`)
+}, 3000)
 
-// Export the server for local testing, if needed
-module.exports = server;
+module.exports.handler = serverless(app);

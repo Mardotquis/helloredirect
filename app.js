@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const express = require('express');
-const app = express();
+const app = express.Router();
 const port = 3000;
 const time = new Date();
 
@@ -57,8 +57,4 @@ app.post('/set', async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`API server listening at http://localhost:${port}`);
-});
-
+module.exports = app;
