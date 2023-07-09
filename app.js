@@ -22,13 +22,15 @@ app.get('/get', async (req, res) => {
 	  }
 });
 
+// Endpoint to retrieve text entries
 app.get('/health', async (req, res) => {
   try {
-        res.json({ healthy: true, date: time) });
+    res.json({ healthy: true, time });
   } catch (error) {
-    console.error('Error retrieving text entries from DynamoDB:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'error hitting api' });
+	  }
 });
+
 
 // Endpoint to set new text entries
 app.post('/set', async (req, res) => {
