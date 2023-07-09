@@ -1,27 +1,22 @@
-const app = require('./app'); // Replace with the path to your Express app file
+const awsServerlessExpress = require('aws-serverless-express');
 const express = require('express');
-const serverless = require('serverless-http');
 
-// Create the Lambda handler function
-const handler = serverless(app);
+const app = require('./app.js');
+// Create the server instance using awsServerlessExpress
+const server = awsServerlessExpress.createServer(app);
 
-module.exports.handler = async (event, context) => {
-  try {
-    // You can do other things here
-
-    const result = await handler(event, context);
-
-    // You can do other things here
-
-    return result;
-  } catch (error) {
-    // Log the error
-    console.error('An error occurred:', error);
-
-    // Return an error response if needed
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Oh fuck. Internal Server Error' }),
-    };
-  }
+// Define the Lambda handler function
+exports.handler = (event, context) => {
+  // Proxy the event and context to the server's `proxy` method
+  awsServerlessExpress.proxy(server, event, context);    
 };
+
+// Run the app locally using nodemon
+
+  const port = process.env.PORT || 3000;
+  server.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+
+// Export the server for local testing, if needed
+module.exports = server;
