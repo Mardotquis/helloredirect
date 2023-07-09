@@ -1,12 +1,22 @@
 const app = require('./app'); // Replace with the path to your Express app file
+const express = require('express');
 
-exports.handler = async (event, context) => {
+// Define your routes and middleware
+app.get('/', (req, res) => {
+  res.send('Hello, q world!');
+});
+
+// Export the handler function
+module.exports.handler = async (event, context) => {
   return new Promise((resolve, reject) => {
-    const server = app.listen(3000, () => {
-      const { port } = server.address();
-      console.log(`Express server listening on port ${port}`);
-      resolve();
+    // Run the Express application
+    app(event, context, (error) => {
+      if (error) {
+        console.log('error occ::', error)
+        reject(error);
+      } else {
+        resolve();
+      }
     });
   });
 };
-
