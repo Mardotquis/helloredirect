@@ -18,6 +18,8 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
+plugins:
+  - serverless-express 
 
 resources:
   Resources:
