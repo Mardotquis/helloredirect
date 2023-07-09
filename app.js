@@ -31,6 +31,26 @@ app.get('/health', async (req, res) => {
 	  }
 });
 
+app.get('/nigga', (req, res) => {
+  const title = 'guess who works';
+  const description = 'me nigga!';
+
+  const html = `
+    <html>
+      <head>
+        <title>${title}</title>
+      </head>
+      <body>
+        <h1>${title}</h1>
+        <p>${description}</p>
+      </body>
+    </html>
+  `;
+
+  res.send(html);
+});
+
+
 
 // Endpoint to set new text entries
 app.post('/set', async (req, res) => {
