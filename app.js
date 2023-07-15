@@ -7,52 +7,68 @@ const time = new Date();
 // Configure AWS SDK	
 AWS.config.update({ region: 'us-east-1' });
 
-// Create a DynamoDB client
-const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-// Endpoint to retrieve text entries
-app.get('/get', async (req, res) => {
-  try {
-    const result = await dynamodb.scan({ TableName: 'TemporaryUrls' }).promise();
-    const textEntries = result.Items.map((item) => item.textEntry);
-    res.json({ entries: textEntries });
-  } catch (error) {
-    console.error('Error retrieving text entries from DynamoDB:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-	  }
+const dynamoDb = new DynamoDB({
+  region: process.env.DYNAMODB_REGION,
+  endpoint: process.env.DYNAMODB_ENDPOINT  
 });
+
+const table = 'TemporaryUrls';
 
 app.get('/health', async (req, res) => {
   try {
-        res.json({ healthy: true, date: time) });
+    res.json({ healthy: true, date: time) });
   } catch (error) {
     console.error('Error retrieving text entries from DynamoDB:', error);
     res.status(500).json({ error: 'Internal Server Error' });
 });
 
-// Endpoint to set new text entries
-app.post('/set', async (req, res) => {
-  const { textEntry } = req.body;
+app.get('/gen', (req, res) => {
+  const { url } = req.query;
 
-  // Generate a unique identifier
-  const uniqueId = generateUniqueId();
+  const id = uuid().substring(0, 3);
 
-  // Save the text entry in DynamoDB
   const params = {
-    TableName: 'TemporaryUrls',
+    TableName: table,
     Item: {
-      id: uniqueId,
-      textEntry: textEntry,
+      id,
+      url,
     },
   };
 
-  try {
-    await dynamodb.put(params).promise();
-    res.status(201).json({ message: 'Text entry saved successfully' });
-  } catch (error) {
-    console.error('Error saving text entry to DynamoDB:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+  dynamoDb.putItem(params, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error generating short link');
+    }
+
+    return res.send({ id });
+  });
+});
+
+app.get('/get/:id', (req, res) => {
+  const { id } = req.params;
+
+  const params = {
+    TableName: table,
+    Key: {
+      id,
+    },
+  };
+
+  dynamoDb.getItem(params, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error retrieving link');
+    }
+
+    if (!data.Item) {
+      return res.status(404).send('Short link not found');
+    }
+
+    const { url } = data.Item;
+    return res.redirect(url);
+  });
 });
 
 // Start the server
