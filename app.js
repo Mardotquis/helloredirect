@@ -7,13 +7,12 @@ const time = new Date();
 // Configure AWS SDK	
 AWS.config.update({ region: 'us-east-1' });
 
-
 const dynamoDb = new DynamoDB({
   region: process.env.DYNAMODB_REGION,
   endpoint: process.env.DYNAMODB_ENDPOINT  
 });
 
-const table = 'TemporaryUrls';
+const TableName = 'TemporaryUrls';
 
 app.get('/health', async (req, res) => {
   try {
@@ -29,7 +28,7 @@ app.get('/gen', (req, res) => {
   const id = uuid().substring(0, 3);
 
   const params = {
-    TableName: table,
+    TableName,
     Item: {
       id,
       url,
@@ -50,7 +49,7 @@ app.get('/get/:id', (req, res) => {
   const { id } = req.params;
 
   const params = {
-    TableName: table,
+    TableName,
     Key: {
       id,
     },
