@@ -16,7 +16,7 @@ const TableName = 'TemporaryUrls';
 
 app.get('/health', async (req, res) => {
   try {
-    res.json({ healthy: true, date: time) });
+    res.json({ healthy: true, date: time });
   } catch (error) {
     res.status(500).json({ error: 'error hitting api' });
 	  }
