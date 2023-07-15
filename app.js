@@ -7,7 +7,7 @@ const time = new Date();
 // Configure AWS SDK	
 AWS.config.update({ region: 'us-east-1' });
 
-const dynamoDb = new DynamoDB({
+const dynamoDb = new AWS.DynamoDB({
   region: process.env.DYNAMODB_REGION,
   endpoint: process.env.DYNAMODB_ENDPOINT  
 });
